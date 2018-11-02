@@ -19,11 +19,11 @@
       
         <tags>
             
+            <tag> SSRF </tag>
+            
             <tag> CTF </tag>
             
             <tag> Writeup </tag>
-            
-            <tag> SSRF </tag>
             
             <tag> InCTF </tag>
             
@@ -54,9 +54,9 @@
       
         <tags>
             
-            <tag> Gopher </tag>
-            
             <tag> SSRF </tag>
+            
+            <tag> Gopher </tag>
             
             <tag> RCE </tag>
             
@@ -135,9 +135,9 @@
             
             <tag> MySQL </tag>
             
-            <tag> Gopher </tag>
-            
             <tag> SSRF </tag>
+            
+            <tag> Gopher </tag>
             
             <tag> Wireshark </tag>
             
