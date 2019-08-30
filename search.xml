@@ -112,11 +112,11 @@
       
         <tags>
             
+            <tag> SSRF </tag>
+            
             <tag> CTF </tag>
             
             <tag> Writeup </tag>
-            
-            <tag> SSRF </tag>
             
             <tag> InCTF </tag>
             
@@ -280,9 +280,9 @@
       
         <tags>
             
-            <tag> MySQL </tag>
-            
             <tag> Ubuntu </tag>
+            
+            <tag> MySQL </tag>
             
         </tags>
       
