@@ -50,21 +50,21 @@
       
         <tags>
             
-            <tag> SSRF </tag>
-            
             <tag> Writeup </tag>
             
+            <tag> SSRF </tag>
+            
             <tag> RCE </tag>
+            
+            <tag> PHP </tag>
+            
+            <tag> disable_functions </tag>
             
             <tag> InCTF </tag>
             
             <tag> Gopherus </tag>
             
             <tag> SQL </tag>
-            
-            <tag> PHP </tag>
-            
-            <tag> disable_functions </tag>
             
             <tag> Code-Review </tag>
             
@@ -184,11 +184,11 @@
       
         <tags>
             
-            <tag> SSRF </tag>
-            
             <tag> CTF </tag>
             
             <tag> Writeup </tag>
+            
+            <tag> SSRF </tag>
             
             <tag> InCTF </tag>
             
