@@ -50,9 +50,9 @@
       
         <tags>
             
-            <tag> Writeup </tag>
-            
             <tag> SSRF </tag>
+            
+            <tag> Writeup </tag>
             
             <tag> RCE </tag>
             
@@ -184,11 +184,11 @@
       
         <tags>
             
+            <tag> SSRF </tag>
+            
             <tag> CTF </tag>
             
             <tag> Writeup </tag>
-            
-            <tag> SSRF </tag>
             
             <tag> InCTF </tag>
             
@@ -298,13 +298,13 @@
       
         <tags>
             
-            <tag> MySQL </tag>
-            
             <tag> SSRF </tag>
             
             <tag> Gopher </tag>
             
             <tag> Wireshark </tag>
+            
+            <tag> MySQL </tag>
             
         </tags>
       
@@ -352,9 +352,9 @@
       
         <tags>
             
-            <tag> MySQL </tag>
-            
             <tag> Ubuntu </tag>
+            
+            <tag> MySQL </tag>
             
         </tags>
       
