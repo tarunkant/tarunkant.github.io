@@ -19,11 +19,11 @@
       
         <tags>
             
-            <tag> Writeup </tag>
-            
             <tag> SSRF </tag>
             
             <tag> RCE </tag>
+            
+            <tag> Writeup </tag>
             
             <tag> PHP </tag>
             
@@ -89,11 +89,11 @@
       
         <tags>
             
-            <tag> Writeup </tag>
-            
             <tag> SSRF </tag>
             
             <tag> RCE </tag>
+            
+            <tag> Writeup </tag>
             
             <tag> PHP </tag>
             
@@ -190,11 +190,11 @@
       
         <tags>
             
+            <tag> RCE </tag>
+            
             <tag> CTF </tag>
             
             <tag> Writeup </tag>
-            
-            <tag> RCE </tag>
             
             <tag> PHP </tag>
             
@@ -223,11 +223,11 @@
       
         <tags>
             
+            <tag> SSRF </tag>
+            
             <tag> CTF </tag>
             
             <tag> Writeup </tag>
-            
-            <tag> SSRF </tag>
             
             <tag> InCTF </tag>
             
@@ -391,9 +391,9 @@
       
         <tags>
             
-            <tag> Ubuntu </tag>
-            
             <tag> MySQL </tag>
+            
+            <tag> Ubuntu </tag>
             
         </tags>
       
