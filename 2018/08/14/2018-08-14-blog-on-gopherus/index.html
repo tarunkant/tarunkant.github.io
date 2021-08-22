@@ -191,9 +191,9 @@
   
 
   <div class="content" itemprop="articleBody">
-    <p>Hey Everyone, I am writing this blog on my tool <a href="https://github.com/tarunkant/Gopherus" target="_blank" rel="noopener">Gopherus</a></p>
+    <p>Hey Everyone, I am writing this blog on my tool <a target="_blank" rel="noopener" href="https://github.com/tarunkant/Gopherus">Gopherus</a></p>
 <h2 id="What-this-tool-do-exactly"><a href="#What-this-tool-do-exactly" class="headerlink" title="What this tool do exactly?"></a>What this tool do exactly?</h2><p>Generates Gopher payload for exploiting SSRF and gaining RCE, on SSRF vulnerable sites.<br>I’ve written this tool for MySQL, FastCGI, Memcached, Redis, Zabbix, SMTP servers.<br>So here we will talk about all sever with his exploitation technique in details separately.</p>
-<h2 id="Explanation-of-each-attack"><a href="#Explanation-of-each-attack" class="headerlink" title="Explanation of each attack:"></a>Explanation of each attack:</h2><h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><p>As I automated this before <a href="https://github.com/tarunkant/Automation/blob/master/SSRF-through-Gopher.py" target="_blank" rel="noopener">here</a>. Now I only need to upgrade it.<br>So now it has additional features like, now it won’t ask for MySQL packets as earlier one does, here it will directly ask Username and will create Gopher payload for doing SSRF.<br>And I have written a blog on the same describing my python script <a href="https://spyclub.tech/2018/ssrf-through-gopher/" target="_blank" rel="noopener">here</a>  </p>
+<h2 id="Explanation-of-each-attack"><a href="#Explanation-of-each-attack" class="headerlink" title="Explanation of each attack:"></a>Explanation of each attack:</h2><h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><p>As I automated this before <a target="_blank" rel="noopener" href="https://github.com/tarunkant/Automation/blob/master/SSRF-through-Gopher.py">here</a>. Now I only need to upgrade it.<br>So now it has additional features like, now it won’t ask for MySQL packets as earlier one does, here it will directly ask Username and will create Gopher payload for doing SSRF.<br>And I have written a blog on the same describing my python script <a target="_blank" rel="noopener" href="https://spyclub.tech/2018/ssrf-through-gopher/">here</a>  </p>
 <p><img src="/images/photos/tool2.0.png" alt="image"></p>
 <h3 id="FastCGI"><a href="#FastCGI" class="headerlink" title="FastCGI"></a>FastCGI</h3><p>If the port 9000 is open then this vulnerability can exist and it can lead to RCE, only you need to send some data as you can see in the python script.<br>For exploiting it only you need to provide a filename which must exist on the victim system(preferable .php) BTW I have put one default file named <code>/usr/share/php/PEAR.php</code> and then one terminal command to execute in the victim system.<br>And then you done, you will get gopher payload which will do the rest.  </p>
 <p><img src="/images/photos/tool2.2.png" alt="image"></p>
@@ -392,7 +392,7 @@ function showSlides1(n) {
 <p><img src="/images/photos/tool2.9.png" alt="image"></p>
 <h3 id="SMTP"><a href="#SMTP" class="headerlink" title="SMTP"></a>SMTP</h3><p>SMTP server uses port 25 for sending mails, So as for SSRF we can send mail to anyone as a victim user and the generated gopher payload will do the same.  </p>
 <p><img src="/images/photos/tool2.10.png" alt="image"></p>
-<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p>You can get Usage and screenshots <a href="https://github.com/tarunkant/Gopherus#usage" target="_blank" rel="noopener">here</a>  </p>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p>You can get Usage and screenshots <a target="_blank" rel="noopener" href="https://github.com/tarunkant/Gopherus#usage">here</a>  </p>
 <p>I hope you found it a nice article.</p>
 
   </div>
