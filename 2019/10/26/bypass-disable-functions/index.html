@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Hey, I am SpyD3r(@TarunkantG) and in this blog I will be discussing the new functions I got to bypass PHP disable_functions and also the other tricks to do the same.Me and one of my teammate @__c3rb3r">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fuzzphunc gets me new functions to bypass PHP disable_functions">
+<meta property="og:url" content="https://tarunkant.github.io/2019/10/26/bypass-disable-functions/index.html">
+<meta property="og:site_name" content="SpyClub">
+<meta property="og:description" content="Hey, I am SpyD3r(@TarunkantG) and in this blog I will be discussing the new functions I got to bypass PHP disable_functions and also the other tricks to do the same.Me and one of my teammate @__c3rb3r">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog3.0.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog3.2.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog3.1.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog3.3.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog3.4.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog3.5.png">
+<meta property="article:published_time" content="2019-10-25T18:30:00.000Z">
+<meta property="article:modified_time" content="2022-09-07T15:45:03.234Z">
+<meta property="article:author" content="SpyD3r">
+<meta property="article:tag" content="RCE">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="Bypass">
+<meta property="article:tag" content="disable_functions">
+<meta property="article:tag" content="fuzzphunc">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tarunkant.github.io/images/photos/blog3.0.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>fuzzphunc gets me new functions to bypass PHP disable_functions</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Responsive_1 -->
+
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6813652886953741"
+     data-ad-slot="9518537929"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+           google_ad_client: "ca-pub-6813652886953741",
+           enable_page_level_ads: true
+      });
+</script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2020/08/02/inctf2020-gosqlv3-challenge-writeup/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/10/15/inctf2019-web-challenges-writeup/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&text=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&title=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&is_video=false&description=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=fuzzphunc gets me new functions to bypass PHP disable_functions&body=Check out this article: https://tarunkant.github.io/2019/10/26/bypass-disable-functions/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&title=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&title=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&title=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&title=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&name=fuzzphunc gets me new functions to bypass PHP disable_functions&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#How-to-Bypass-PHP-disable-functions"><span class="toc-number">1.</span> <span class="toc-text">How to Bypass PHP disable_functions:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#How-the-idea-came"><span class="toc-number">2.</span> <span class="toc-text">How the idea came:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#How-I-started"><span class="toc-number">3.</span> <span class="toc-text">How I started:</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Getting-the-no-and-type-of-arguments-of-the-php-functions"><span class="toc-number">3.1.</span> <span class="toc-text">Getting the no. and type of arguments of the php functions:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Making-of-Input"><span class="toc-number">3.2.</span> <span class="toc-text">Making of Input:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Why-we-couldn%E2%80%99t-do-fuzzing-on-resource-type-parameter"><span class="toc-number">3.3.</span> <span class="toc-text">Why we couldn’t do fuzzing on resource type parameter:</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Result-of-Fuzzing"><span class="toc-number">4.</span> <span class="toc-text">Result of Fuzzing:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dfunc-bypasser-tool"><span class="toc-number">5.</span> <span class="toc-text">dfunc-bypasser tool:</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Some-Screenshots-of-the-same"><span class="toc-number">5.1.</span> <span class="toc-text">Some Screenshots of the same:</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        fuzzphunc gets me new functions to bypass PHP disable_functions
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">SpyClub</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2019-10-25T18:30:00.000Z" itemprop="datePublished">2019-10-26</time>
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/blog/">blog</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Bypass/" rel="tag">Bypass</a>, <a class="tag-link-link" href="/tags/PHP/" rel="tag">PHP</a>, <a class="tag-link-link" href="/tags/RCE/" rel="tag">RCE</a>, <a class="tag-link-link" href="/tags/disable-functions/" rel="tag">disable_functions</a>, <a class="tag-link-link" href="/tags/fuzzphunc/" rel="tag">fuzzphunc</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>Hey, I am SpyD3r(<a target="_blank" rel="noopener" href="https://twitter.com/TarunkantG">@TarunkantG</a>) and in this blog I will be discussing the new functions I got to bypass PHP disable_functions and also the other tricks to do the same.<br>Me and one of my teammate <a target="_blank" rel="noopener" href="https://twitter.com/__c3rb3ru5__">@__c3rb3ru5__</a> made <code>lazyFuzzer</code> to fuzz the all PHP functions to check if they call <code>execve</code> system call internally. In this blog mainly I will be discussing the difficulties we faced to make the Fuzzer and how we certainly solved those issues to get more new functions.  </p>
+<p>I also made a tool on the top of the findings this fuzzer did, here,<br><strong>Announcing</strong> <a target="_blank" rel="noopener" href="https://github.com/teambi0s/dfunc-bypasser">dfunc-bypasser</a> for letting you know how strong your disable_function is and how you can bypass that. You can get the more details on the same while reading this blog.</p>
+<p><strong>Note:</strong> The functions I got are not in the default php installation, instead the php modules which get installed sometimes during normal installation.  </p>
+<p>So let’s dive into details:</p>
+<h1 id="How-to-Bypass-PHP-disable-functions"><a href="#How-to-Bypass-PHP-disable-functions" class="headerlink" title="How to Bypass PHP disable_functions:"></a>How to Bypass PHP disable_functions:</h1><p>There are 3 ways(known to me) to bypass disable_functions:  </p>
+<ol>
+<li><p>Using <code>LD_PRELOAD</code>: You use the PHP function which calls <code>execve</code> syscall internally, and using <code>LD_PRELOAD</code> you overwrite the definition and get the shell. You can get the detailed writeup to do the same <a target="_blank" rel="noopener" href="https://spyclub.tech/2019/10/15/inctf2019-web-challenges-writeup/#Copy-Cat">here</a>. The known functions to do the same are <code>mail</code> and <code>error_log</code>. Or you can use <code>php-imagick</code> library to change the file type, which sometimes call <code>execve</code> internally, overwrite any definition from them to get the shell, for this you can get the detailed writeup <a target="_blank" rel="noopener" href="https://blog.bi0s.in/2019/10/23/Web/BSidesDelhi19-evalme/">here</a>.</p>
+</li>
+<li><p>Using <code>PHP-FPM</code>: If the <code>PHP-FPM</code> service is running in the server, you can use that to get the shell, you can use <a target="_blank" rel="noopener" href="https://github.com/tarunkant/Gopherus">Gopherus</a> to generate the payload of <code>FastCGI</code> then urldecode it and write that payload to the sock file or the port of <code>php-fpm</code> using <code>fsockopen</code> and <code>fwrite</code>. You can get the detailed writeup of the same <a target="_blank" rel="noopener" href="https://spyclub.tech/2019/10/15/inctf2019-web-challenges-writeup/#GoSQLv2">here</a>.</p>
+</li>
+<li><p>Or use any N-Day PHP exploit, which is not fixed in the given version in order to get the shell.</p>
+</li>
+</ol>
+<h1 id="How-the-idea-came"><a href="#How-the-idea-came" class="headerlink" title="How the idea came:"></a>How the idea came:</h1><p>While playing the a lot of CTFs, I have seen that, these time a lot of CTF challenges needed to bypass the disable_functions whereas the <strong>well-known</strong> function for doing the same are only two(<code>mail</code> and <code>error_log</code>). So that gave me the idea to fuzz all the php functions and check if they call <code>execve</code> internally.</p>
+<h1 id="How-I-started"><a href="#How-I-started" class="headerlink" title="How I started:"></a>How I started:</h1><p>First, I installed all the php-modules on the server and thought of fuzzing the functions from it’s minimum arguments to max arguments with the flag range of (-10,10), so for this we needed to know which functions takes how many arguments to run and if the argument type is string then which string should go, if it is file then which file and so on we need to figure out for all argument type. So now I have following task to complete:</p>
+<h2 id="Getting-the-no-and-type-of-arguments-of-the-php-functions"><a href="#Getting-the-no-and-type-of-arguments-of-the-php-functions" class="headerlink" title="Getting the no. and type of arguments of the php functions:"></a>Getting the no. and type of arguments of the php functions:</h2><p>First thing was to find out the, what number of argument the function needs? so I used the error messages of the functions which says, <code>at least</code>, <code>at most</code>, <code>exactly</code> the number of argument should be used.  </p>
+<p><img src="/images/photos/blog3.0.png" alt="a">  </p>
+<p><strong>Note:</strong> For this I could have also used <a target="_blank" rel="noopener" href="https://www.php.net/manual/en/class.reflectionfunction.php">ReflectionFunction</a> class to find out the max and the least numbers of arguments needed.  </p>
+<p><img src="/images/photos/blog3.2.png" alt="a"></p>
+<p>Now, we needed to check, what type of input the function takes? that also we solved using error ;). But the problem here is, you can’t get the types of arguments all in the once. You have to set the arguments such that the php can check the next argument.  </p>
+<p><img src="/images/photos/blog3.1.png" alt="a">  </p>
+<p><strong>Note:</strong> For this you <strong>can’t</strong> use <code>ReflectionFunction</code> class because, this class mainly works for user defined functions not for php pre-defined(internal) functions.</p>
+<p>As this will be too much of the task to do, I went to find a interesting string which can satisfy all types.</p>
+<h2 id="Making-of-Input"><a href="#Making-of-Input" class="headerlink" title="Making of Input:"></a>Making of Input:</h2><p>This was trivial task to do.<br>As the 1st step gave us the type of arguments to be send to the function. The types can be one of these: <code>int</code>,<code>string</code>,<code>file</code>,<code>resource</code>,<code>boolean</code>,<code>float</code>,<code>Array</code>,<code>Object</code>,<code>NULL</code>. So if you start fuzzing a function having argument type of int, string, file then your fuzzer will run for <code>3!</code> times(As described earlier).<br>Now the task to find the string which satisfy almost all of these argument types. So I came with interesting string<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x27;1/../../../../../../../etc/passwd&#x27;</span><br></pre></td></tr></table></figure><br>This String can be used as <code>string</code>,<code>int</code>,<code>file</code> and <code>bool</code></p>
+<p><img src="/images/photos/blog3.3.png" alt="a"></p>
+<p>For the <code>flag</code> argument, we will be using integers from the range of (-10,10).<br>For the <code>Object</code> type argument, most of the time functions don’t take the input as Object.<br><code>Null</code> is satisfied, because we fuzzed from min to max arguments.<br><code>Array</code> we didn’t do because it’s not too common.<br>So now we have string which almost contains all of the types but not <code>Resource</code>.</p>
+<h2 id="Why-we-couldn’t-do-fuzzing-on-resource-type-parameter"><a href="#Why-we-couldn’t-do-fuzzing-on-resource-type-parameter" class="headerlink" title="Why we couldn’t do fuzzing on resource type parameter:"></a>Why we couldn’t do fuzzing on resource type parameter:</h2><p>There are two best answer for this:  </p>
+<ol>
+<li>The main problem on fuzzing resource type argument was, How we will get to know that what and whose resource does the argument need? Let’s say one example, <code>socket_connect</code>, this function need a resource argument, now how will you know that, which resource does this function need without checking the PHP manual of that ;).<br>Btw if anyone know how to find out using cli then please give me a ping.</li>
+<li>And the second answer is itself the name, <code>lazyFuzzer</code>.</li>
+</ol>
+<h1 id="Result-of-Fuzzing"><a href="#Result-of-Fuzzing" class="headerlink" title="Result of Fuzzing:"></a>Result of Fuzzing:</h1><p>I got 4 new functions which can bypass PHP disable_functions using <code>LD_PRELOAD</code>. All these functions are in different different modules of PHP.  </p>
+<ol>
+<li><code>mb_send_mail</code> : If your system has <code>php-mbstring</code> module installed then this function can be used to bypass php disable_functions.</li>
+<li><code>imap_mail</code> : If your system has <code>php-imap</code> module installed then this function also can be used to bypass the php disable_functions.</li>
+<li><code>libvirt_connect</code> : If your system has <code>php-libvirt-php</code> module installed then this function also can be used to bypass disable_functions.</li>
+<li><code>gnupg_init</code> : If your system has <code>php-gnupg</code> module installed then this function also can be used to bypass disable_functions.</li>
+</ol>
+<p>You can get the file which has been used for this testing, here, <a target="_blank" rel="noopener" href="https://github.com/tarunkant/fuzzphunc/blob/master/lazyFuzzer.py">lazyFuzzer.py</a>.</p>
+<h1 id="dfunc-bypasser-tool"><a href="#dfunc-bypasser-tool" class="headerlink" title="dfunc-bypasser tool:"></a>dfunc-bypasser tool:</h1><p>This tool is to test how much strong your disable_functions is. The tool takes your input and tells you that, which function could possibly bypass the given disable_functions.<br>You can install this tool from <a target="_blank" rel="noopener" href="https://github.com/teambi0s/dfunc-bypasser">here</a>.  </p>
+<h2 id="Some-Screenshots-of-the-same"><a href="#Some-Screenshots-of-the-same" class="headerlink" title="Some Screenshots of the same:"></a>Some Screenshots of the same:</h2><p><img src="/images/photos/blog3.4.png" alt="a"><br><img src="/images/photos/blog3.5.png" alt="a"></p>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#How-to-Bypass-PHP-disable-functions"><span class="toc-number">1.</span> <span class="toc-text">How to Bypass PHP disable_functions:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#How-the-idea-came"><span class="toc-number">2.</span> <span class="toc-text">How the idea came:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#How-I-started"><span class="toc-number">3.</span> <span class="toc-text">How I started:</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Getting-the-no-and-type-of-arguments-of-the-php-functions"><span class="toc-number">3.1.</span> <span class="toc-text">Getting the no. and type of arguments of the php functions:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Making-of-Input"><span class="toc-number">3.2.</span> <span class="toc-text">Making of Input:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Why-we-couldn%E2%80%99t-do-fuzzing-on-resource-type-parameter"><span class="toc-number">3.3.</span> <span class="toc-text">Why we couldn’t do fuzzing on resource type parameter:</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Result-of-Fuzzing"><span class="toc-number">4.</span> <span class="toc-text">Result of Fuzzing:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dfunc-bypasser-tool"><span class="toc-number">5.</span> <span class="toc-text">dfunc-bypasser tool:</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Some-Screenshots-of-the-same"><span class="toc-number">5.1.</span> <span class="toc-text">Some Screenshots of the same:</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&text=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&title=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&is_video=false&description=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=fuzzphunc gets me new functions to bypass PHP disable_functions&body=Check out this article: https://tarunkant.github.io/2019/10/26/bypass-disable-functions/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&title=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&title=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&title=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&title=fuzzphunc gets me new functions to bypass PHP disable_functions"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tarunkant.github.io/2019/10/26/bypass-disable-functions/&name=fuzzphunc gets me new functions to bypass PHP disable_functions&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 SpyD3r
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+</body>
+</html>
+<!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- ad_1 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6813652886953741"
+     data-ad-slot="9851733933"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-122832343-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'spyclub';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+

